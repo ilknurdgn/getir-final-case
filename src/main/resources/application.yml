@@ -6,8 +6,8 @@ spring:
     name: getir-final-case
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/getir_final_case_db
-    username: ${POSTGRES_USERNAME}
+    url: jdbc:postgresql://localhost:5432/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
