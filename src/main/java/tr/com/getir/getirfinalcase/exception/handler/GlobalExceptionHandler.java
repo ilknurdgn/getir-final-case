@@ -7,9 +7,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tr.com.getir.getirfinalcase.exception.EmailAlreadyExistException;
+import tr.com.getir.getirfinalcase.exception.InvalidCredentialsException;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -21,13 +25,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<GeneralErrorMessage> handleValidationException(MethodArgumentNotValidException exception) {
-        StringBuilder errorMessage = new StringBuilder();
-        exception.getBindingResult().getFieldErrors().forEach(error ->
-                errorMessage.append(error.getField()).append(": ").append(error.getDefaultMessage())
-        );
+        String errorMessages = exception.getBindingResult().getFieldErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
 
         return new ResponseEntity<>(
-                new GeneralErrorMessage(false, errorMessage.toString(), LocalDateTime.now()),
+                new GeneralErrorMessage(false, errorMessages, LocalDateTime.now()),
                 HttpStatus.BAD_REQUEST
         );
     }
@@ -46,5 +49,9 @@ public class GlobalExceptionHandler {
                 .body(new GeneralErrorMessage(false, message, LocalDateTime.now()));
     }
 
+    @ExceptionHandler(InvalidCredentialsException.class)
+    public ResponseEntity<GeneralErrorMessage> handleInvalidCredentialsException(InvalidCredentialsException exception){
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.UNAUTHORIZED);
+    }
 
 }
