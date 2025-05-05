@@ -17,17 +17,17 @@ import org.springframework.web.bind.annotation.RestController;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.UserLoginRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.UserCreateRequest;
-import tr.com.getir.getirfinalcase.model.dto.response.AuthResponse;
+import tr.com.getir.getirfinalcase.model.dto.response.AuthenticationResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericReponse;
-import tr.com.getir.getirfinalcase.service.UserService;
+import tr.com.getir.getirfinalcase.service.AuthenticationService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 @Tag(name = "Authentication", description = "User registration and login operations")
-public class AuthController {
+public class AuthenticationController {
 
-    private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     // REGISTER
     @Operation(
@@ -40,8 +40,8 @@ public class AuthController {
             @ApiResponse(responseCode = "409", description = "Email already exists", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<GenericReponse<AuthResponse>> register(@RequestBody @Valid UserCreateRequest request){
-        AuthResponse response = userService.register(request);
+    public ResponseEntity<GenericReponse<AuthenticationResponse>> register(@RequestBody @Valid UserCreateRequest request){
+        AuthenticationResponse response = authenticationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new GenericReponse<>(true, "User registered successfully", response));
     }
@@ -57,8 +57,8 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Incorrect email or password", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
     @PostMapping("/login")
-    public GenericReponse<AuthResponse> login(@RequestBody @Valid UserLoginRequest request){
-        AuthResponse response = userService.login(request);
+    public GenericReponse<AuthenticationResponse> login(@RequestBody @Valid UserLoginRequest request){
+        AuthenticationResponse response = authenticationService.login(request);
         return new GenericReponse<>(true, "Login successful", response);
     }
 }
