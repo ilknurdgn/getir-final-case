@@ -6,16 +6,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
+import tr.com.getir.getirfinalcase.model.dto.request.UserUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
+import tr.com.getir.getirfinalcase.model.entity.User;
+import tr.com.getir.getirfinalcase.security.CustomUserDetails;
+import tr.com.getir.getirfinalcase.service.AuthenticationService;
 import tr.com.getir.getirfinalcase.service.UserService;
 
 import java.util.List;
@@ -27,6 +29,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     // GET USER PROFILE
     @Operation(
@@ -41,8 +44,9 @@ public class UserController {
 
     @GetMapping("/profile")
     @PreAuthorize("hasRole('PATRON')")
-    public GenericResponse<UserResponse> getUser(Authentication authentication){
-        UserResponse response = userService.getUser(authentication.getName());
+    public GenericResponse<UserResponse> getUser(){
+        User user =authenticationService.getAuthenticatedUser();
+        UserResponse response = userService.getUser(user.getId());
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 
@@ -60,7 +64,7 @@ public class UserController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public GenericResponse<UserResponse> getUserById(@PathVariable Long id){
-        UserResponse response = userService.getUserById(id);
+        UserResponse response = userService.getUser(id);
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 
@@ -79,5 +83,22 @@ public class UserController {
     public GenericResponse<List<UserResponse>> getAllUsers(){
         List<UserResponse> responses = userService.getAllUsers();
         return new GenericResponse<>(true, "Users retrieved successfully", responses);
+    }
+
+    // UPDATE USER PROFILE
+    @PatchMapping("/profile")
+    @PreAuthorize("hasRole('PATRON')")
+    public GenericResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request){
+        User user =authenticationService.getAuthenticatedUser();
+        userService.updateUser(user.getId(), request);
+        return new GenericResponse<>(true, "User updated successfully", null);
+    }
+
+    // UPDATE USER BY ID
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<String> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request){
+        userService.updateUser(id, request);
+        return new GenericResponse<>(true, "User updated successfully", null);
     }
 }

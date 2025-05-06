@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import tr.com.getir.getirfinalcase.exception.EmailAlreadyExistException;
@@ -59,5 +61,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(request.email());
         return new AuthenticationResponse(jwtUtil.generateToken(userDetails));
+    }
+
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUser();
     }
 }
