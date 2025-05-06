@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import tr.com.getir.getirfinalcase.model.dto.request.UserCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
 
 @Component
@@ -20,6 +21,17 @@ public class UserMapper{
                 .password(passwordEncoder.encode(request.password()))
                 .phoneNumber(request.phoneNumber())
                 .userRole(request.userRole())
+                .build();
+    }
+
+    public UserResponse mapToUserResponse(User user){
+        return UserResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .surname(user.getSurname())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .userRole(user.getUserRole())
                 .build();
     }
 }
