@@ -3,10 +3,12 @@ package tr.com.getir.getirfinalcase.exception.handler;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import tr.com.getir.getirfinalcase.exception.EmailAlreadyExistException;
+import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.exception.InvalidCredentialsException;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -53,5 +55,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<GeneralErrorMessage> handleInvalidCredentialsException(InvalidCredentialsException exception){
         return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<GeneralErrorMessage> handleEntityNotFoundException(EntityNotFoundException exception){
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<GeneralErrorMessage> handleAccessDeniedException(AccessDeniedException exception) {
+            return new ResponseEntity<>(new GeneralErrorMessage(false,
+                    "Access denied. You are not authorized for this action.", LocalDateTime.now()), HttpStatus.FORBIDDEN);
+        }
+
+
 
 }
