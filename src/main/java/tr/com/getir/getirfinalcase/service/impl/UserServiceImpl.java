@@ -24,4 +24,13 @@ public class UserServiceImpl implements UserService {
 
         return userMapper.mapToUserResponse(user);
     }
+
+    // GET USER BY ID
+    @Override
+    public UserResponse getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+
+        return userMapper.mapToUserResponse(user);
+    }
 }
