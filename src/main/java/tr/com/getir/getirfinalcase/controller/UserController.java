@@ -86,6 +86,15 @@ public class UserController {
     }
 
     // UPDATE USER PROFILE
+    @Operation(
+            summary = "Update authenticated user's profile",
+            description = "Updates the profile of the currently authenticated user. Accessible only by users with PATRON role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action."),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
     @PatchMapping("/profile")
     @PreAuthorize("hasRole('PATRON')")
     public GenericResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request){
@@ -95,6 +104,16 @@ public class UserController {
     }
 
     // UPDATE USER BY ID
+    @Operation(
+            summary = "Update user by ID",
+            description = "Updates a user's profile by their ID. Accessible only to LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User updated successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action."),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+
     @PatchMapping("/{id}")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public GenericResponse<String> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request){
