@@ -14,24 +14,22 @@ import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.UserUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
-import tr.com.getir.getirfinalcase.model.entity.User;
-import tr.com.getir.getirfinalcase.service.AuthenticationService;
 import tr.com.getir.getirfinalcase.service.UserService;
 
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users/profile")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
-@Tag(name = "Users", description = "Authenticated user profile operations")
-public class UserController {
+@Tag(name = "User Management", description = "Librarian user operations")
+public class UserManagementController {
 
     private final UserService userService;
-    private final AuthenticationService authenticationService;
 
-    // GET USER PROFILE
+    // GET USER BY ID
     @Operation(
-            summary = "Get authenticated user's profile",
-            description = "Returns the profile information of the currently authenticated user. Accessible only by users with PATRON role."
+            summary = "Get user by id",
+            description = "Retrieves user details by user id. Accessible only by users with LIBRARIAN role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User details retrieved successfully"),
@@ -39,50 +37,63 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
 
-    @GetMapping
-    @PreAuthorize("hasRole('PATRON')")
-    public GenericResponse<UserResponse> getUser(){
-        User user =authenticationService.getAuthenticatedUser();
-        UserResponse response = userService.getUser(user.getId());
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<UserResponse> getUserById(@PathVariable Long id){
+        UserResponse response = userService.getUser(id);
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 
-    // UPDATE USER PROFILE
+    // GET ALL USERS
     @Operation(
-            summary = "Update authenticated user's profile",
-            description = "Updates the profile of the currently authenticated user. Accessible only by users with PATRON role."
+            summary = "Get all users",
+            description = "Returns a list of all registered users. Accessible only by users with LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @GetMapping("/")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<List<UserResponse>> getAllUsers(){
+        List<UserResponse> responses = userService.getAllUsers();
+        return new GenericResponse<>(true, "Users retrieved successfully", responses);
+    }
+
+    // UPDATE USER BY ID
+    @Operation(
+            summary = "Update user by id",
+            description = "Updates a user's profile by their id. Accessible only to LIBRARIAN role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
             @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
-    @PatchMapping
-    @PreAuthorize("hasRole('PATRON')")
-    public GenericResponse<Void> updateUser(@RequestBody @Valid UserUpdateRequest request){
-        User user =authenticationService.getAuthenticatedUser();
-        userService.updateUser(user.getId(), request);
+
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<String> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request){
+        userService.updateUser(id, request);
         return new GenericResponse<>(true, "User updated successfully", null);
     }
 
-
-    // DELETE USER PROFILE
+    // DELETE USER BY ID
     @Operation(
-            summary = "Delete own user profile",
-            description = "Deletes the currently authenticated user's profile. Accessible only by users with PATRON role."
+            summary = "Delete user by id",
+            description = "Deletes a user by their id. Accessible only to users with LIBRARIAN role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User deleted successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied - only LIBRARIAN can perform this operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
             @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
 
-    @DeleteMapping
-    @PreAuthorize("hasRole('PATRON')")
-    public GenericResponse<Void> deleteUSer(){
-        User user = authenticationService.getAuthenticatedUser();
-        userService.deleteUser(user.getId());
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<Void> deleteUSer(@PathVariable Long id){
+        userService.deleteUser(id);
         return new GenericResponse<>(true, "User deleted successfully", null);
     }
-
 }
