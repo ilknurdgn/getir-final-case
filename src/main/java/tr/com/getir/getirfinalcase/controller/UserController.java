@@ -9,14 +9,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.UserUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
-import tr.com.getir.getirfinalcase.security.CustomUserDetails;
 import tr.com.getir.getirfinalcase.service.AuthenticationService;
 import tr.com.getir.getirfinalcase.service.UserService;
 
@@ -75,7 +73,7 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.")
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
 
     @GetMapping("/")
@@ -92,8 +90,8 @@ public class UserController {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action."),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
     @PatchMapping("/profile")
     @PreAuthorize("hasRole('PATRON')")
@@ -105,13 +103,13 @@ public class UserController {
 
     // UPDATE USER BY ID
     @Operation(
-            summary = "Update user by ID",
-            description = "Updates a user's profile by their ID. Accessible only to LIBRARIAN role."
+            summary = "Update user by id",
+            description = "Updates a user's profile by their id. Accessible only to LIBRARIAN role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User updated successfully"),
-            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action."),
-            @ApiResponse(responseCode = "404", description = "User not found")
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
 
     @PatchMapping("/{id}")
@@ -119,5 +117,42 @@ public class UserController {
     public GenericResponse<String> updateUserById(@PathVariable Long id, @RequestBody @Valid UserUpdateRequest request){
         userService.updateUser(id, request);
         return new GenericResponse<>(true, "User updated successfully", null);
+    }
+
+    // DELETE USER PROFILE
+    @Operation(
+            summary = "Delete own user profile",
+            description = "Deletes the currently authenticated user's profile. Accessible only by users with PATRON role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @DeleteMapping("/profile")
+    @PreAuthorize("hasRole('PATRON')")
+    public GenericResponse<Void> deleteUSer(){
+        User user = authenticationService.getAuthenticatedUser();
+        userService.deleteUser(user.getId());
+        return new GenericResponse<>(true, "User deleted successfully", null);
+    }
+
+    // DELETE USER BY ID
+    @Operation(
+            summary = "Delete user by id",
+            description = "Deletes a user by their id. Accessible only to users with LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User deleted successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied - only LIBRARIAN can perform this operation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<Void> deleteUSer(@PathVariable Long id){
+        userService.deleteUser(id);
+        return new GenericResponse<>(true, "User deleted successfully", null);
     }
 }
