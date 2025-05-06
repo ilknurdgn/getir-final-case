@@ -9,6 +9,8 @@ import tr.com.getir.getirfinalcase.model.entity.User;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.UserService;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -32,5 +34,15 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException("User not found"));
 
         return userMapper.mapToUserResponse(user);
+    }
+
+    // GET ALL USERS
+    @Override
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(userMapper::mapToUserResponse)
+                .toList();
     }
 }

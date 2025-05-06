@@ -18,6 +18,8 @@ import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import tr.com.getir.getirfinalcase.service.UserService;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -29,7 +31,7 @@ public class UserController {
     // GET USER PROFILE
     @Operation(
             summary = "Get authenticated user's profile",
-            description = "Returns the profile information of the currently authenticated user (only for PATRON role)."
+            description = "Returns the profile information of the currently authenticated user. Accessible only by users with PATRON role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User details retrieved successfully"),
@@ -47,7 +49,7 @@ public class UserController {
     // GET USER BY ID
     @Operation(
             summary = "Get user by id",
-            description = "Retrieves user details by user id (only for LIBRARIAN role)."
+            description = "Retrieves user details by user id. Accessible only by users with LIBRARIAN role."
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "User details retrieved successfully"),
@@ -60,5 +62,22 @@ public class UserController {
     public GenericResponse<UserResponse> getUserById(@PathVariable Long id){
         UserResponse response = userService.getUserById(id);
         return new GenericResponse<>(true, "User details retrieved successfully", response);
+    }
+
+    // GET ALL USERS
+    @Operation(
+            summary = "Get all users",
+            description = "Returns a list of all registered users. Accessible only by users with LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Users retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.")
+    })
+
+    @GetMapping("/")
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    public GenericResponse<List<UserResponse>> getAllUsers(){
+        List<UserResponse> responses = userService.getAllUsers();
+        return new GenericResponse<>(true, "Users retrieved successfully", responses);
     }
 }
