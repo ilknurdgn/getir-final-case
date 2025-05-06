@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import tr.com.getir.getirfinalcase.model.entity.common.Auditable;
 import tr.com.getir.getirfinalcase.model.enums.UserRole;
 
 @Entity
@@ -14,7 +15,7 @@ import tr.com.getir.getirfinalcase.model.enums.UserRole;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User extends Auditable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
