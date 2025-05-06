@@ -18,7 +18,7 @@ import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.UserLoginRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.UserCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.AuthenticationResponse;
-import tr.com.getir.getirfinalcase.model.dto.response.GenericReponse;
+import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.service.AuthenticationService;
 
 @RestController
@@ -40,10 +40,10 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "409", description = "Email already exists", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
     @PostMapping("/register")
-    public ResponseEntity<GenericReponse<AuthenticationResponse>> register(@RequestBody @Valid UserCreateRequest request){
+    public ResponseEntity<GenericResponse<AuthenticationResponse>> register(@RequestBody @Valid UserCreateRequest request){
         AuthenticationResponse response = authenticationService.register(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(new GenericReponse<>(true, "User registered successfully", response));
+                .body(new GenericResponse<>(true, "User registered successfully", response));
     }
 
     // LOGIN
@@ -57,8 +57,8 @@ public class AuthenticationController {
             @ApiResponse(responseCode = "401", description = "Incorrect email or password", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
     @PostMapping("/login")
-    public GenericReponse<AuthenticationResponse> login(@RequestBody @Valid UserLoginRequest request){
+    public GenericResponse<AuthenticationResponse> login(@RequestBody @Valid UserLoginRequest request){
         AuthenticationResponse response = authenticationService.login(request);
-        return new GenericReponse<>(true, "Login successful", response);
+        return new GenericResponse<>(true, "Login successful", response);
     }
 }
