@@ -2,18 +2,23 @@ package tr.com.getir.getirfinalcase.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import tr.com.getir.getirfinalcase.exception.DuplicateIsbnException;
 import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.mapper.BookMapper;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
+import tr.com.getir.getirfinalcase.model.specification.BookSpecification;
 import tr.com.getir.getirfinalcase.repository.BookRepository;
 import tr.com.getir.getirfinalcase.service.BookService;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +62,28 @@ public class BookServiceImpl implements BookService {
                 page.getTotalElements(),
                 page.getTotalPages(),
                 page.isLast()
+        );
+    }
+
+
+    // SEARCH
+    @Override
+    public PagedResponse<BookListResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable) {
+        Specification<Book> specification = BookSpecification.filter(criteria);
+        Page<Book> booksPage = bookRepository.findAll(specification, pageable);
+
+        List<BookListResponse> content = booksPage
+                .stream()
+                .map(bookMapper::mapBookToBookListResponse)
+                .toList();
+
+        return new PagedResponse<>(
+                content,
+                booksPage.getNumber(),
+                booksPage.getSize(),
+                booksPage.getTotalElements(),
+                booksPage.getTotalPages(),
+                booksPage.isLast()
         );
     }
 
