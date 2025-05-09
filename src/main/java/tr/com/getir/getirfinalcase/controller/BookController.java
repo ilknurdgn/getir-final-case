@@ -123,4 +123,24 @@ public class BookController {
         bookService.updateBook(id, request);
         return new GenericResponse<>(true, "Book updated successfully", null);
     }
+
+    // DELETE BOOK
+    @Operation(
+            summary = "Delete book",
+            description = "Deletes an existing book by its ID. Accessible only by users with LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Book deleted successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @DeleteMapping("/{id}")
+    public GenericResponse<Void> deleteBook(@PathVariable Long id){
+        bookService.deleteBook(id);
+        return new GenericResponse<>(true, "Book deleted successfully", null);
+    }
 }

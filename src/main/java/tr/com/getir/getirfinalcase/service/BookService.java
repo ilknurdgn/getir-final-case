@@ -18,4 +18,6 @@ public interface BookService {
     PagedResponse<BookListResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable);
 
     void updateBook(Long id, BookUpdateRequest request);
+
+    void deleteBook(Long id);
 }
