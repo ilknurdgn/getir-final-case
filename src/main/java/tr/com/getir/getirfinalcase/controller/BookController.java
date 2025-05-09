@@ -11,10 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
@@ -70,10 +72,36 @@ public class BookController {
     }
 
     // GET ALL BOOKS
+    @Operation(summary = "Get all books", description = "Returns a paginated list of all books. Accessible by librarians and patrons.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Books retrieved successfully"),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
     @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
     @GetMapping("/")
-    public GenericResponse<PagedResponse<BookListResponse>> getAllBooks(@ParameterObject Pageable pageable){
+    public GenericResponse<PagedResponse<BookListResponse>> getAllBooks(@ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
         PagedResponse<BookListResponse> response = bookService.getAllBooks(pageable);
         return new GenericResponse<>(true, "Books retrieved successfully", response);
+    }
+
+    // SEARCH
+    @Operation(summary = "Search books", description = "Search for books by title, author, ISBN or genre. Supports pagination.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Books filtered successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid search parameters",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
+    @GetMapping("/search")
+    public GenericResponse<PagedResponse<BookListResponse>> searchBooks(
+            @ParameterObject BookSearchCriteriaRequest criteria,
+            @ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
+        PagedResponse<BookListResponse> response = bookService.searchBooks(criteria, pageable);
+        return new GenericResponse<>(true, "Books filtered successfully", response);
     }
 }
