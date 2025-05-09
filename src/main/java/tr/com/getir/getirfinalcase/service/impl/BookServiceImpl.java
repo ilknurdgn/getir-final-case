@@ -3,8 +3,10 @@ package tr.com.getir.getirfinalcase.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tr.com.getir.getirfinalcase.exception.DuplicateIsbnException;
+import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.mapper.BookMapper;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
 import tr.com.getir.getirfinalcase.repository.BookRepository;
 import tr.com.getir.getirfinalcase.service.BookService;
@@ -27,6 +29,15 @@ public class BookServiceImpl implements BookService {
 
         Book book = bookMapper.mapBookCreateRequestToBook(request);
         bookRepository.save(book);
+    }
+
+    // GET BOOK BY ID
+    @Override
+    public BookResponse getBookById(Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(()-> new EntityNotFoundException("Book not found"));
+
+        return bookMapper.mapBookToBookResponse(book);
     }
 
 }

@@ -59,7 +59,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<GeneralErrorMessage> handleEntityNotFoundException(EntityNotFoundException exception){
-        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(AccessDeniedException.class)

@@ -9,12 +9,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.service.BookService;
 
@@ -44,5 +42,25 @@ public class BookController {
     public GenericResponse<Void> addBook(@RequestBody @Valid BookCreateRequest request) {
         bookService.addBook(request);
         return new GenericResponse<>(true, "Book added successfully", null);
+    }
+
+    // GET BOOK BY ID
+    @Operation(
+            summary = "Get book details by id",
+            description = "Retrieves detailed information about a book by its id. Accessible by users with LIBRARIAN or PATRON role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Book details retrieved successfully"),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
+    @GetMapping("/{id}")
+    public GenericResponse<BookResponse> getBookById (@PathVariable Long id){
+        BookResponse response = bookService.getBookById(id);
+        return new GenericResponse<>(true, "Book details retrieved successfully", response);
     }
 }
