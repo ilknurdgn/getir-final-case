@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
@@ -103,5 +103,24 @@ public class BookController {
             @ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
         PagedResponse<BookListResponse> response = bookService.searchBooks(criteria, pageable);
         return new GenericResponse<>(true, "Books filtered successfully", response);
+    }
+
+    // UPDATE BOOK
+    @Operation(summary = "Partial update book", description = "Updates only provided fields of a book. Accessible only by users with LIBRARIAN role.")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "Book patched successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid input",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "Book not found",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @PatchMapping("/{id}")
+    public GenericResponse<Void> updateBook(@PathVariable Long id, @RequestBody @Valid BookUpdateRequest request){
+        bookService.updateBook(id, request);
+        return new GenericResponse<>(true, "Book updated successfully", null);
     }
 }

@@ -9,6 +9,7 @@ import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.mapper.BookMapper;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
@@ -19,6 +20,7 @@ import tr.com.getir.getirfinalcase.service.BookService;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -86,5 +88,24 @@ public class BookServiceImpl implements BookService {
                 booksPage.isLast()
         );
     }
+
+    // UPDATE BOOK
+    @Override
+    public void updateBook(Long id, BookUpdateRequest request) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+        Optional.ofNullable(request.title()).ifPresent(book::setTitle);
+        Optional.ofNullable(request.author()).ifPresent(book::setAuthor);
+        Optional.ofNullable(request.publisher()).ifPresent(book::setPublisher);
+        Optional.ofNullable(request.genre()).ifPresent(book::setGenre);
+        Optional.ofNullable(request.publicationDate()).ifPresent(book::setPublicationDate);
+        Optional.ofNullable(request.stockCount()).ifPresent(book::setStockCount);
+        Optional.ofNullable(request.stockCount()).ifPresent(book::setStockCount);
+
+        bookRepository.save(book);
+    }
+
+
 
 }

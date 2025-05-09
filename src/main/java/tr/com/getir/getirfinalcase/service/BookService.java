@@ -2,6 +2,7 @@ package tr.com.getir.getirfinalcase.service;
 
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface BookService {
     PagedResponse<BookListResponse> getAllBooks(Pageable pageable);
 
     PagedResponse<BookListResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable);
+
+    void updateBook(Long id, BookUpdateRequest request);
 }

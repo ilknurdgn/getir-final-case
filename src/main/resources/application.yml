@@ -24,3 +24,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
