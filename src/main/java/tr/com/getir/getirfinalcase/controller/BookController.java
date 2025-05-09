@@ -8,12 +8,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
+import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
 import tr.com.getir.getirfinalcase.service.BookService;
 
 @RestController
@@ -62,5 +67,13 @@ public class BookController {
     public GenericResponse<BookResponse> getBookById (@PathVariable Long id){
         BookResponse response = bookService.getBookById(id);
         return new GenericResponse<>(true, "Book details retrieved successfully", response);
+    }
+
+    // GET ALL BOOKS
+    @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
+    @GetMapping("/")
+    public GenericResponse<PagedResponse<BookListResponse>> getAllBooks(@ParameterObject Pageable pageable){
+        PagedResponse<BookListResponse> response = bookService.getAllBooks(pageable);
+        return new GenericResponse<>(true, "Books retrieved successfully", response);
     }
 }
