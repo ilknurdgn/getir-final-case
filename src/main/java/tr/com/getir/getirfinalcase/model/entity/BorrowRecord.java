@@ -21,17 +21,14 @@ public class BorrowRecord extends Auditable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "borrow_date", nullable = false)
     private LocalDate borrowDate;
 
-    @Column(nullable = false)
+    @Column(name = "due_date", nullable = false)
     private LocalDate dueDate;
 
-    @Column
+    @Column(name = "return_date")
     private LocalDate returnDate;
-
-    @Column(nullable = false)
-    private Boolean overdue;
 
     @ManyToOne
     @JoinColumn(name = "book_id", nullable = false)
