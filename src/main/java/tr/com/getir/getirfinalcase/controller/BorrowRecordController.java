@@ -65,4 +65,62 @@ public class BorrowRecordController {
         List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(userId);
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
     }
+
+    // GET AUTHENTICATICATED USER BORROW RECORDS
+    @Operation(
+            summary = "Get borrow records of the authenticated user",
+            description = "Retrieves a list of borrow records for the currently logged-in user. Only users with role 'PATRON' can access this endpoint."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrow records successfully retrieved."),
+            @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class))),
+            @ApiResponse(responseCode = "404", description = "User not found.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
+    })
+
+    @PreAuthorize("hasRole('PATRON')")
+    @GetMapping("/profile")
+    public GenericResponse<List<BorrowRecordsResponse>> getAuthenticatedUserBorrowRecords(){
+        User user = authenticationService.getAuthenticatedUser();
+        List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(user.getId());
+        return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
+    }
+
+    // RETURN BOOK
+    @Operation(
+            summary = "Return a borrowed book",
+            description = "Allows a patron to return a book they have borrowed. Updates the return date and book availability."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Book returned successfully",
+                    content = @Content(schema = @Schema(implementation = GenericResponse.class))
+            ),
+            @ApiResponse(
+                    responseCode = "403",
+                    description = "Returning a book borrowed by another user is not permitted",
+                    content = @Content(schema = @Schema(implementation = GeneralErrorMessage.class))
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Borrow record not found",
+                    content = @Content(schema = @Schema(implementation = GeneralErrorMessage.class))
+            ),
+            @ApiResponse(
+                    responseCode = "409",
+                    description = "Book has already been returned",
+                    content = @Content(schema = @Schema(implementation = GeneralErrorMessage.class))
+            )
+    })
+
+    @PreAuthorize("hasRole('PATRON')")
+    @PatchMapping("/return")
+    public GenericResponse<Void> returnBook(@RequestParam Long borrowRecordId){
+        User user = authenticationService.getAuthenticatedUser();
+        borrowRecordService.returnBook(borrowRecordId, user.getId());
+        return new GenericResponse<>(true, "Book returned successfully", null);
+    }
+
 }

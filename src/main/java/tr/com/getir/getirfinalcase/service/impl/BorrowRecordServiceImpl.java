@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import tr.com.getir.getirfinalcase.exception.BookNotAvailableException;
 import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
+import tr.com.getir.getirfinalcase.exception.UnauthorizedBorrowReturnException;
 import tr.com.getir.getirfinalcase.exception.UserHasOverdueRecordException;
 import tr.com.getir.getirfinalcase.mapper.BorrowRecordMapper;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
@@ -16,6 +17,7 @@ import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.BorrowRecordService;
 
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -67,5 +69,29 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
                 .map(borrowRecordMapper::toBorrowRecordResponse)
                 .toList();
 
+    }
+
+    // RETURN BOOK
+    @Override
+    @Transactional
+    public void returnBook(Long borrowRecordId, Long userId) {
+        BorrowRecord borrowRecord = borrowRecordRepository.findById(borrowRecordId)
+                .orElseThrow(() -> new EntityNotFoundException("Borrow record not found"));
+
+        if(!borrowRecord.getUser().getId().equals(userId)){
+            throw new UnauthorizedBorrowReturnException("Returning a book borrowed by another user is not permitted");
+        }
+
+        if (borrowRecord.getReturnDate() != null) {
+            throw new IllegalStateException("This book was already returned");
+        }
+
+        borrowRecord.setReturnDate(LocalDate.now());
+
+        Book book = borrowRecord.getBook();
+        book.setAvailability(true);
+
+        bookRepository.save(book);
+        borrowRecordRepository.save(borrowRecord);
     }
 }

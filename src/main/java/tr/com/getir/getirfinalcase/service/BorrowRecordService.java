@@ -9,4 +9,6 @@ public interface BorrowRecordService {
     void borrowBook(User user, Long bookId);
 
     List<BorrowRecordsResponse> getBorrowRecordsByUserId(Long userId);
+
+    void returnBook(Long borrowRecordId, Long id);
 }
