@@ -71,12 +71,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(UserHasOverdueRecordException.class)
     public ResponseEntity<GeneralErrorMessage> handleUserHasOverdueRecordException(UserHasOverdueRecordException exception){
-        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(BookNotAvailableException.class)
     public ResponseEntity<GeneralErrorMessage> handleBookNotAvailableException(BookNotAvailableException exception){
-        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.CONFLICT);
     }
 
 
