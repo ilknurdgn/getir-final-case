@@ -43,12 +43,12 @@ public class Book extends Auditable {
     @Column(name = "publication_date", nullable = false)
     private LocalDate publicationDate;
 
-    @Min(value = 1, message = "At least one copy must be created")
-    @Column(name = "stock_count", nullable = false)
-    private int stockCount;
+    @Column(name = "availability", nullable = false)
+    private Boolean availability;
 
-    @Column(name = "available_count")
-    private int availableCount;
+    @Column(name = "shelf_location", nullable = false)
+    private String shelfLocation;
+
 
     @Override
     public boolean equals(Object o) {

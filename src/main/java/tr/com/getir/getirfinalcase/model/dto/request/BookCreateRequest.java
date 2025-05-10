@@ -26,7 +26,7 @@ public record BookCreateRequest(
         @NotNull(message = "Publication date is required")
         LocalDate publicationDate,
 
-        @Min(value = 1, message = "At least one copy must be created")
-        int stockCount
+        @NotBlank(message = "Location is required")
+        String shelfLocation
 ) {
 }

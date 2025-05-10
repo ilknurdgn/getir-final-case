@@ -17,7 +17,6 @@ import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
-import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
@@ -81,8 +80,8 @@ public class BookController {
 
     @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
     @GetMapping("/")
-    public GenericResponse<PagedResponse<BookListResponse>> getAllBooks(@ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
-        PagedResponse<BookListResponse> response = bookService.getAllBooks(pageable);
+    public GenericResponse<PagedResponse<BookResponse>> getAllBooks(@ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
+        PagedResponse<BookResponse> response = bookService.getAllBooks(pageable);
         return new GenericResponse<>(true, "Books retrieved successfully", response);
     }
 
@@ -98,10 +97,10 @@ public class BookController {
 
     @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
     @GetMapping("/search")
-    public GenericResponse<PagedResponse<BookListResponse>> searchBooks(
+    public GenericResponse<PagedResponse<BookResponse>> searchBooks(
             @ParameterObject BookSearchCriteriaRequest criteria,
             @ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
-        PagedResponse<BookListResponse> response = bookService.searchBooks(criteria, pageable);
+        PagedResponse<BookResponse> response = bookService.searchBooks(criteria, pageable);
         return new GenericResponse<>(true, "Books filtered successfully", response);
     }
 

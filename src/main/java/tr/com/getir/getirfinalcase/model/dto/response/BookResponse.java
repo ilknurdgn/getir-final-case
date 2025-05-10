@@ -14,7 +14,7 @@ public record BookResponse(
         String publisher,
         BookGenre genre,
         LocalDate publicationDate,
-        int stockCount,
-        int availableCount
+        Boolean availability,
+        String shelfLocation
 ) {
 }

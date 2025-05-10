@@ -11,7 +11,7 @@ public record BookUpdateRequest(
         String isbn,
         BookGenre genre,
         LocalDate publicationDate,
-        Integer stockCount
+        String shelfLocation
 
 ) {
 }

@@ -10,7 +10,6 @@ import tr.com.getir.getirfinalcase.mapper.BookMapper;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookSearchCriteriaRequest;
 import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
-import tr.com.getir.getirfinalcase.model.dto.response.BookListResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
@@ -53,9 +52,9 @@ public class BookServiceImpl implements BookService {
 
     // GET ALL BOOKS
     @Override
-    public PagedResponse<BookListResponse> getAllBooks(Pageable pageable) {
-        Page<BookListResponse> page = bookRepository.findAll(pageable)
-                .map(bookMapper::mapBookToBookListResponse);
+    public PagedResponse<BookResponse> getAllBooks(Pageable pageable) {
+        Page<BookResponse> page = bookRepository.findAll(pageable)
+                .map(bookMapper::mapBookToBookResponse);
 
         return new PagedResponse<>(
                 page.getContent(),
@@ -70,13 +69,13 @@ public class BookServiceImpl implements BookService {
 
     // SEARCH
     @Override
-    public PagedResponse<BookListResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable) {
+    public PagedResponse<BookResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable) {
         Specification<Book> specification = BookSpecification.filter(criteria);
         Page<Book> booksPage = bookRepository.findAll(specification, pageable);
 
-        List<BookListResponse> content = booksPage
+        List<BookResponse> content = booksPage
                 .stream()
-                .map(bookMapper::mapBookToBookListResponse)
+                .map(bookMapper::mapBookToBookResponse)
                 .toList();
 
         return new PagedResponse<>(
@@ -100,8 +99,7 @@ public class BookServiceImpl implements BookService {
         Optional.ofNullable(request.publisher()).ifPresent(book::setPublisher);
         Optional.ofNullable(request.genre()).ifPresent(book::setGenre);
         Optional.ofNullable(request.publicationDate()).ifPresent(book::setPublicationDate);
-        Optional.ofNullable(request.stockCount()).ifPresent(book::setStockCount);
-        Optional.ofNullable(request.stockCount()).ifPresent(book::setStockCount);
+        Optional.ofNullable(request.shelfLocation()).ifPresent(book::setShelfLocation);
 
         bookRepository.save(book);
     }
