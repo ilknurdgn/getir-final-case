@@ -79,5 +79,9 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(UnauthorizedBorrowReturnException.class)
+    public ResponseEntity<GeneralErrorMessage> handleUnauthorizedBorrowReturnException(UnauthorizedBorrowReturnException exception){
+        return new ResponseEntity<>(new GeneralErrorMessage(false, exception.getMessage(), LocalDateTime.now()), HttpStatus.FORBIDDEN);
+    }
 
 }
