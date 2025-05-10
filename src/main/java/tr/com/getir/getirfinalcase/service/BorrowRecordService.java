@@ -11,7 +11,10 @@ public interface BorrowRecordService {
 
     List<BorrowRecordsResponse> getBorrowRecordsByUserId(Long userId);
 
+    List<BorrowRecordWithUserResponse> getAllBorrowRecords();
+
     void returnBook(Long borrowRecordId, Long id);
 
     List<BorrowRecordWithUserResponse> getOverdueRecords();
+
 }

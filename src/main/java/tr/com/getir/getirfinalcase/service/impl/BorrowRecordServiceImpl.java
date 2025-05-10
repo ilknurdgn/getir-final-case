@@ -71,6 +71,16 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
     }
 
+    // GET ALL BORROW RECORDS
+    @Override
+    public List<BorrowRecordWithUserResponse> getAllBorrowRecords() {
+        List<BorrowRecord> borrowRecordList = borrowRecordRepository.findAll();
+
+        return borrowRecordList.stream()
+                .map(borrowRecordMapper::toWithUserResponse)
+                .toList();
+    }
+
     // RETURN BOOK
     @Override
     @Transactional

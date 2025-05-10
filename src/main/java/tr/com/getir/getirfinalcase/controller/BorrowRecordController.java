@@ -61,13 +61,13 @@ public class BorrowRecordController {
     })
 
     @PreAuthorize("hasRole('LIBRARIAN')")
-    @GetMapping("/")
+    @GetMapping("/user")
     public GenericResponse<List<BorrowRecordsResponse>> getBorrowRecordsByUserId(@RequestParam Long userId){
         List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(userId);
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
     }
 
-    // GET AUTHENTICATICATED USER BORROW RECORDS
+    // GET AUTHENTICATED USER BORROW RECORDS
     @Operation(
             summary = "Get borrow records of the authenticated user",
             description = "Retrieves a list of borrow records for the currently logged-in user. Only users with role 'PATRON' can access this endpoint."
@@ -86,6 +86,22 @@ public class BorrowRecordController {
         User user = authenticationService.getAuthenticatedUser();
         List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(user.getId());
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
+    }
+
+    // GET ALL BORROW RECORDS
+    @Operation(
+            summary = "Get all borrow records",
+            description = "Retrieves all borrow records in the system including user and book details. Accessible only to users with the LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Borrow records successfully retrieved")
+    })
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @GetMapping("/")
+    public GenericResponse<List<BorrowRecordWithUserResponse>> getAllBorrowRecords(){
+        List<BorrowRecordWithUserResponse> responses = borrowRecordService.getAllBorrowRecords();
+        return new GenericResponse<>(true, "Borrow records successfully retrieved.", responses);
     }
 
     // RETURN BOOK
