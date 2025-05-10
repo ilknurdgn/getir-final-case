@@ -1,6 +1,7 @@
 package tr.com.getir.getirfinalcase.mapper;
 
 import org.springframework.stereotype.Component;
+import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordWithUserResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
 import tr.com.getir.getirfinalcase.model.entity.BorrowRecord;
@@ -31,6 +32,27 @@ public class BorrowRecordMapper {
                         borrowRecord.getBook().getTitle(),
                         borrowRecord.getBook().getAuthor(),
                         borrowRecord.getBook().getIsbn()
+                ))
+                .build();
+    }
+
+    public BorrowRecordWithUserResponse toWithUserResponse(BorrowRecord borrowRecord){
+        return BorrowRecordWithUserResponse.builder()
+                .id(borrowRecord.getId())
+                .borrowDate(borrowRecord.getBorrowDate())
+                .dueDate(borrowRecord.getDueDate())
+                .returnDate(borrowRecord.getReturnDate())
+                .book(new BorrowRecordWithUserResponse.BookInfo(
+                        borrowRecord.getBook().getId(),
+                        borrowRecord.getBook().getTitle(),
+                        borrowRecord.getBook().getAuthor(),
+                        borrowRecord.getBook().getIsbn()
+                ))
+                .user(new BorrowRecordWithUserResponse.UserInfo(
+                        borrowRecord.getUser().getId(),
+                        borrowRecord.getUser().getName(),
+                        borrowRecord.getUser().getSurname(),
+                        borrowRecord.getUser().getEmail()
                 ))
                 .build();
     }

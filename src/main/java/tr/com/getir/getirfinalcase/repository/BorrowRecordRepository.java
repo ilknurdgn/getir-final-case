@@ -14,4 +14,6 @@ public interface BorrowRecordRepository extends JpaRepository<BorrowRecord, Long
     boolean existsByUserAndDueDateBeforeAndReturnDateIsNull(User user, LocalDate now);
 
     List<BorrowRecord> findByUserId(Long userId);
+
+    List<BorrowRecord> findByReturnDateIsNullAndDueDateBefore(LocalDate now);
 }

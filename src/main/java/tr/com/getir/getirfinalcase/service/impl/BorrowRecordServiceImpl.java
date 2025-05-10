@@ -8,6 +8,7 @@ import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.exception.UnauthorizedBorrowReturnException;
 import tr.com.getir.getirfinalcase.exception.UserHasOverdueRecordException;
 import tr.com.getir.getirfinalcase.mapper.BorrowRecordMapper;
+import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordWithUserResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
 import tr.com.getir.getirfinalcase.model.entity.BorrowRecord;
@@ -17,7 +18,6 @@ import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.BorrowRecordService;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -93,5 +93,16 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
         bookRepository.save(book);
         borrowRecordRepository.save(borrowRecord);
+    }
+
+    // GET OVERDUE RECORDS
+    @Override
+    @Transactional
+    public List<BorrowRecordWithUserResponse> getOverdueRecords() {
+        List<BorrowRecord> overdueRecords = borrowRecordRepository.findByReturnDateIsNullAndDueDateBefore(LocalDate.now());
+
+        return overdueRecords.stream()
+                .map(borrowRecordMapper::toWithUserResponse)
+                .toList();
     }
 }

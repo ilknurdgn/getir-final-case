@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import tr.com.getir.getirfinalcase.exception.errormessages.GeneralErrorMessage;
+import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordWithUserResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.GenericResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
@@ -121,6 +122,26 @@ public class BorrowRecordController {
         User user = authenticationService.getAuthenticatedUser();
         borrowRecordService.returnBook(borrowRecordId, user.getId());
         return new GenericResponse<>(true, "Book returned successfully", null);
+    }
+
+    // GET OVERDUE RECORDS
+    @Operation(
+            summary = "Get all overdue borrow records",
+            description = "Retrieves all borrow records that are overdue (not returned and past due date). Accessible only to users with the LIBRARIAN role."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Overdue borrow records retrieved successfully",
+                    content = @Content(schema = @Schema(implementation = GenericResponse.class))
+            )
+    })
+
+    @PreAuthorize("hasRole('LIBRARIAN')")
+    @GetMapping("/overdue")
+    public GenericResponse<List<BorrowRecordWithUserResponse>> getOverdueRecords(){
+        List<BorrowRecordWithUserResponse> responses = borrowRecordService.getOverdueRecords();
+        return new GenericResponse<>(true, "Overdue borrow records retrieved successfully", responses);
     }
 
 }

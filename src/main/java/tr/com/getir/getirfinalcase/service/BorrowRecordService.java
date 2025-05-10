@@ -1,5 +1,6 @@
 package tr.com.getir.getirfinalcase.service;
 
+import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordWithUserResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
 
@@ -11,4 +12,6 @@ public interface BorrowRecordService {
     List<BorrowRecordsResponse> getBorrowRecordsByUserId(Long userId);
 
     void returnBook(Long borrowRecordId, Long id);
+
+    List<BorrowRecordWithUserResponse> getOverdueRecords();
 }
