@@ -1,7 +1,6 @@
 package tr.com.getir.getirfinalcase.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -48,6 +47,9 @@ public class Book extends Auditable {
 
     @Column(name = "shelf_location", nullable = false)
     private String shelfLocation;
+
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BorrowRecord> borrowRecords;
 
 
     @Override

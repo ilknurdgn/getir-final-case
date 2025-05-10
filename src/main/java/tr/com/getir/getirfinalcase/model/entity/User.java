@@ -1,13 +1,14 @@
 package tr.com.getir.getirfinalcase.model.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import tr.com.getir.getirfinalcase.model.entity.common.Auditable;
 import tr.com.getir.getirfinalcase.model.enums.UserRole;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -39,6 +40,9 @@ public class User extends Auditable {
     @Column(name = "user_role", nullable = false)
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BorrowRecord> borrowRecords;
 
     @Override
     public boolean equals(Object o) {
