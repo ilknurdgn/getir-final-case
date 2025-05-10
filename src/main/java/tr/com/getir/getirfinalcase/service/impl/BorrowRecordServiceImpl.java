@@ -7,14 +7,17 @@ import tr.com.getir.getirfinalcase.exception.BookNotAvailableException;
 import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.exception.UserHasOverdueRecordException;
 import tr.com.getir.getirfinalcase.mapper.BorrowRecordMapper;
+import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
 import tr.com.getir.getirfinalcase.model.entity.BorrowRecord;
 import tr.com.getir.getirfinalcase.model.entity.User;
 import tr.com.getir.getirfinalcase.repository.BookRepository;
 import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
+import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.BorrowRecordService;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +26,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BorrowRecordRepository borrowRecordRepository;
     private final BookRepository bookRepository;
     private final BorrowRecordMapper borrowRecordMapper;
+    private final UserRepository userRepository;
 
     // BORROW BOOK
     @Override
@@ -48,5 +52,20 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         bookRepository.save(book);
         BorrowRecord borrowRecord = borrowRecordMapper.toBorrowRecord(user, book);
         borrowRecordRepository.save(borrowRecord);
+    }
+
+    // GET BORROW RECORDS BY USER ID
+    @Override
+    public List<BorrowRecordsResponse> getBorrowRecordsByUserId(Long userId) {
+        if (!userRepository.existsById(userId)) {
+            throw new EntityNotFoundException("User not found");
+        }
+
+        List<BorrowRecord> borrowRecordList = borrowRecordRepository.findByUserId(userId);
+
+        return borrowRecordList.stream()
+                .map(borrowRecordMapper::toBorrowRecordResponse)
+                .toList();
+
     }
 }
