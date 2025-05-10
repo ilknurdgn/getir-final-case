@@ -1,0 +1,52 @@
+package tr.com.getir.getirfinalcase.service.impl;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import tr.com.getir.getirfinalcase.exception.BookNotAvailableException;
+import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
+import tr.com.getir.getirfinalcase.exception.UserHasOverdueRecordException;
+import tr.com.getir.getirfinalcase.mapper.BorrowRecordMapper;
+import tr.com.getir.getirfinalcase.model.entity.Book;
+import tr.com.getir.getirfinalcase.model.entity.BorrowRecord;
+import tr.com.getir.getirfinalcase.model.entity.User;
+import tr.com.getir.getirfinalcase.repository.BookRepository;
+import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
+import tr.com.getir.getirfinalcase.service.BorrowRecordService;
+
+import java.time.LocalDate;
+
+@Service
+@RequiredArgsConstructor
+public class BorrowRecordServiceImpl implements BorrowRecordService {
+
+    private final BorrowRecordRepository borrowRecordRepository;
+    private final BookRepository bookRepository;
+    private final BorrowRecordMapper borrowRecordMapper;
+
+    // BORROW BOOK
+    @Override
+    @Transactional
+    public void borrowBook(User user, Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new EntityNotFoundException("Book not found"));
+
+        if(!book.getAvailability()){
+            throw new BookNotAvailableException("Book is currently not available for borrowing");
+        }
+
+        boolean hasOverdue = borrowRecordRepository
+                .existsByUserAndDueDateBeforeAndReturnDateIsNull(
+                        user, LocalDate.now()
+                );
+
+        if(hasOverdue){
+            throw new UserHasOverdueRecordException("The user has an overdue borrowing record and cannot borrow a new book");
+        }
+
+        book.setAvailability(false);
+        bookRepository.save(book);
+        BorrowRecord borrowRecord = borrowRecordMapper.toBorrowRecord(user, book);
+        borrowRecordRepository.save(borrowRecord);
+    }
+}
