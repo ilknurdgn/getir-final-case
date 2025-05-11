@@ -23,7 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class UserServiceImplTest {
+class UserServiceImplTest {
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -110,6 +110,7 @@ public class UserServiceImplTest {
         verify(userRepository).save(user);
     }
 
+    // UPDATE USER - Failure
     @Test
         void shouldThrowEntityNotFoundException_whenUpdatingNonexistentUser(){
         // Given
@@ -119,6 +120,31 @@ public class UserServiceImplTest {
         assertThrows(EntityNotFoundException.class, ()-> userService.updateUser(1L, createMockUpdateRequest()));
     }
 
+    // DELETE USER - Success
+    @Test
+    void shouldDeleteUser_whenUserExists() {
+        // GIVEN
+        User user = createMockUser();
+
+        // Mock the calls
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        // WHEN
+        userService.deleteUser(1L);
+
+        // THEN
+        verify(userRepository).delete(user);
+    }
+
+    // DELETE USER - Failure
+    @Test
+    void shouldThrowEntityNotFoundException_whenDeletingNonexistentUser() {
+        // GIVEN
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // WHEN & THEN
+        assertThrows(EntityNotFoundException.class, () -> userService.deleteUser(1L));
+    }
 
 
     // MOCK DATA
