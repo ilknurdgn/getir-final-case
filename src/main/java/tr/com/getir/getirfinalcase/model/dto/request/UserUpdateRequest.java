@@ -3,7 +3,9 @@ package tr.com.getir.getirfinalcase.model.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
+@Builder
 public record UserUpdateRequest(
 
         @Size(min = 2, max = 80, message = "Name must be between 2 and 80 characters")

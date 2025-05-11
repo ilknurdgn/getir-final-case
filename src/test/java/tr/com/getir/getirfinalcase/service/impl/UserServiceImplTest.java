@@ -5,8 +5,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
 import tr.com.getir.getirfinalcase.mapper.UserMapper;
+import tr.com.getir.getirfinalcase.model.dto.request.UserUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
 import tr.com.getir.getirfinalcase.model.enums.UserRole;
@@ -17,6 +19,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,6 +33,9 @@ public class UserServiceImplTest {
 
     @Mock
     private UserMapper userMapper;
+
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     // GET USER - Success
     @Test
@@ -52,7 +58,7 @@ public class UserServiceImplTest {
 
     // GET USER - Failure
     @Test
-    void shouldThrowEntityNotFoundException_whenUserNotFound(){
+    void shouldThrowEntityNotFoundException_whenGettingNonexistentUser(){
         // Mock the calls
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
@@ -77,6 +83,40 @@ public class UserServiceImplTest {
         // Then
         assertEquals(expectedResponses.size(), result.size());
         assertEquals(expectedResponses.getFirst(), result.getFirst());
+    }
+
+    // UPDATE USER - Success
+    @Test
+    void shouldUpdateUser_whenAllFieldsArePresent(){
+
+        // Given
+        User user = createMockUser();
+        UserUpdateRequest request = createMockUpdateRequest();
+
+        // Mock the calls
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(passwordEncoder.encode("newPass")).thenReturn("encodedPass");
+
+        // When
+        userService.updateUser(1L, request);
+
+        // Then
+        assertEquals("newName", user.getName());
+        assertEquals("newSurname", user.getSurname());
+        assertEquals("new@example.com", user.getEmail());
+        assertEquals("encodedPass", user.getPassword());
+        assertEquals("05559998877", user.getPhoneNumber());
+
+        verify(userRepository).save(user);
+    }
+
+    @Test
+        void shouldThrowEntityNotFoundException_whenUpdatingNonexistentUser(){
+        // Given
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(EntityNotFoundException.class, ()-> userService.updateUser(1L, createMockUpdateRequest()));
     }
 
 
@@ -105,5 +145,15 @@ public class UserServiceImplTest {
                 .userRole(UserRole.PATRON)
                 .build();
 
+    }
+
+    private UserUpdateRequest createMockUpdateRequest() {
+        return UserUpdateRequest.builder()
+                .name("newName")
+                .surname("newSurname")
+                .email("new@example.com")
+                .password("newPass")
+                .phoneNumber("05559998877")
+                .build();
     }
 }
