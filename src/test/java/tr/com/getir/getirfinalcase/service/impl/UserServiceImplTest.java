@@ -12,6 +12,7 @@ import tr.com.getir.getirfinalcase.model.entity.User;
 import tr.com.getir.getirfinalcase.model.enums.UserRole;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -58,6 +59,27 @@ public class UserServiceImplTest {
         // Expect an exception to be thrown
         assertThrows(EntityNotFoundException.class, () -> userService.getUser(1L));
     }
+
+    // GET ALL USERS
+    @Test
+    void shouldReturnListOfUserResponses_whenUsersExist(){
+        // Given
+        List<User> users = List.of(createMockUser());
+        List<UserResponse> expectedResponses  = List.of(createMockUserResponse());
+
+        // Mock the calls
+        when(userRepository.findAll()).thenReturn(users);
+        when(userMapper.mapToUserResponse(users.getFirst())).thenReturn(expectedResponses.getFirst());
+
+        // When
+        List<UserResponse> result = userService.getAllUsers();
+
+        // Then
+        assertEquals(expectedResponses.size(), result.size());
+        assertEquals(expectedResponses.getFirst(), result.getFirst());
+    }
+
+
 
     // MOCK DATA
     private User createMockUser(){
