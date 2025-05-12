@@ -26,7 +26,7 @@ public class UserManagementController {
 
     private final UserService userService;
 
-    // GET USER BY ID
+
     @Operation(
             summary = "Get user by id",
             description = "Retrieves user details by user id. Accessible only by users with LIBRARIAN role."
@@ -44,7 +44,7 @@ public class UserManagementController {
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 
-    // GET ALL USERS
+
     @Operation(
             summary = "Get all users",
             description = "Returns a list of all registered users. Accessible only by users with LIBRARIAN role."
@@ -61,7 +61,7 @@ public class UserManagementController {
         return new GenericResponse<>(true, "Users retrieved successfully", responses);
     }
 
-    // UPDATE USER BY ID
+
     @Operation(
             summary = "Update user by id",
             description = "Updates a user's profile by their id. Accessible only to LIBRARIAN role."
@@ -79,7 +79,7 @@ public class UserManagementController {
         return new GenericResponse<>(true, "User updated successfully", null);
     }
 
-    // DELETE USER BY ID
+
     @Operation(
             summary = "Delete user by id",
             description = "Deletes a user by their id. Accessible only to users with LIBRARIAN role."

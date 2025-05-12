@@ -33,7 +33,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final UserRepository userRepository;
     private final BookAvailabilityService bookAvailabilityService;
 
-    // BORROW BOOK
+
     @Override
     @Transactional
     public void borrowBook(User user, Long bookId) {
@@ -60,7 +60,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         bookAvailabilityService.publishAvailabilityChange(new BookAvailabilityEvent(book.getId(), false));
     }
 
-    // GET BORROW RECORDS BY USER ID
+
     @Override
     public List<BorrowRecordsResponse> getBorrowRecordsByUserId(Long userId) {
         if (!userRepository.existsById(userId)) {
@@ -75,7 +75,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
     }
 
-    // GET ALL BORROW RECORDS
+
     @Override
     public List<BorrowRecordWithUserResponse> getAllBorrowRecords() {
         List<BorrowRecord> borrowRecordList = borrowRecordRepository.findAll();
@@ -85,7 +85,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
                 .toList();
     }
 
-    // RETURN BOOK
+
     @Override
     @Transactional
     public void returnBook(Long borrowRecordId, Long userId) {
@@ -110,7 +110,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         bookAvailabilityService.publishAvailabilityChange(new BookAvailabilityEvent(book.getId(), true));
     }
 
-    // GET OVERDUE RECORDS
+
     @Override
     @Transactional
     public List<BorrowRecordWithUserResponse> getOverdueRecords() {

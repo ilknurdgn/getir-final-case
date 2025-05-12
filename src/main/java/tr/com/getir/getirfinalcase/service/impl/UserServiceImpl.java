@@ -22,7 +22,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
-    // GET USER
+
     @Override
     public UserResponse getUser(Long id) {
         User user = userRepository.findById(id)
@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         return userMapper.mapToUserResponse(user);
     }
 
-    // GET ALL USERS
+
     @Override
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -41,7 +41,7 @@ public class UserServiceImpl implements UserService {
                 .toList();
     }
 
-    // UPDATE USER PROFILE
+
     @Override
     public void updateUser(Long id, UserUpdateRequest request) {
         User user = userRepository.findById(id)
@@ -56,7 +56,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    // DELETE USER
+
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)

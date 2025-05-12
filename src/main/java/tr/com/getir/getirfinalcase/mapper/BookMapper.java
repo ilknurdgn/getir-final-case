@@ -2,8 +2,11 @@ package tr.com.getir.getirfinalcase.mapper;
 
 import org.springframework.stereotype.Component;
 import tr.com.getir.getirfinalcase.model.dto.request.BookCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
+
+import java.util.Optional;
 
 @Component
 public class BookMapper {
@@ -34,5 +37,16 @@ public class BookMapper {
                 .availability(book.getAvailability())
                 .shelfLocation(book.getShelfLocation())
                 .build();
+    }
+
+    public void updateBookFromRequest(BookUpdateRequest request, Book book){
+        Optional.ofNullable(request.title()).ifPresent(book::setTitle);
+        Optional.ofNullable(request.author()).ifPresent(book::setAuthor);
+        Optional.ofNullable(request.publisher()).ifPresent(book::setPublisher);
+        Optional.ofNullable(request.genre()).ifPresent(book::setGenre);
+        Optional.ofNullable(request.publicationDate()).ifPresent(book::setPublicationDate);
+        Optional.ofNullable(request.shelfLocation()).ifPresent(book::setShelfLocation);
+
+
     }
 }

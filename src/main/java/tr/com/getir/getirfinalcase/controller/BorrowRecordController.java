@@ -28,7 +28,7 @@ public class BorrowRecordController {
     private final BorrowRecordService borrowRecordService;
     private final AuthenticationService authenticationService;
 
-    // BORROW BOOK
+
     @Operation(
             summary = "Borrow a book",
             description = "Authenticated patrons can borrow an available book by its ID."
@@ -41,13 +41,13 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('PATRON')")
     @PostMapping("/")
-    public GenericResponse<Void> borrowBook(@RequestParam Long bookId){
+    public GenericResponse<Void> borrowBook(@RequestParam Long bookId) {
         User user = authenticationService.getAuthenticatedUser();
         borrowRecordService.borrowBook(user, bookId);
         return new GenericResponse<>(true, "Borrowing record created successfully", null);
     }
 
-    // GET BORROW RECORDS BY USER ID
+
     @Operation(
             summary = "Get borrow records by user id",
             description = "Retrieves a list of borrow records for the specified user. Accessible only by users with LIBRARIAN role."
@@ -62,12 +62,12 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('LIBRARIAN')")
     @GetMapping("/user")
-    public GenericResponse<List<BorrowRecordsResponse>> getBorrowRecordsByUserId(@RequestParam Long userId){
-        List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(userId);
+    public GenericResponse<List<BorrowRecordsResponse>> getBorrowRecordsByUserId(@RequestParam Long userId) {
+        List<BorrowRecordsResponse> borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(userId);
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
     }
 
-    // GET AUTHENTICATED USER BORROW RECORDS
+
     @Operation(
             summary = "Get borrow records of the authenticated user",
             description = "Retrieves a list of borrow records for the currently logged-in user. Only users with role 'PATRON' can access this endpoint."
@@ -82,13 +82,13 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('PATRON')")
     @GetMapping("/profile")
-    public GenericResponse<List<BorrowRecordsResponse>> getAuthenticatedUserBorrowRecords(){
+    public GenericResponse<List<BorrowRecordsResponse>> getAuthenticatedUserBorrowRecords() {
         User user = authenticationService.getAuthenticatedUser();
-        List<BorrowRecordsResponse>  borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(user.getId());
+        List<BorrowRecordsResponse> borrowRecordsResponseList = borrowRecordService.getBorrowRecordsByUserId(user.getId());
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", borrowRecordsResponseList);
     }
 
-    // GET ALL BORROW RECORDS
+
     @Operation(
             summary = "Get all borrow records",
             description = "Retrieves all borrow records in the system including user and book details. Accessible only to users with the LIBRARIAN role."
@@ -99,12 +99,12 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('LIBRARIAN')")
     @GetMapping("/")
-    public GenericResponse<List<BorrowRecordWithUserResponse>> getAllBorrowRecords(){
+    public GenericResponse<List<BorrowRecordWithUserResponse>> getAllBorrowRecords() {
         List<BorrowRecordWithUserResponse> responses = borrowRecordService.getAllBorrowRecords();
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", responses);
     }
 
-    // RETURN BOOK
+
     @Operation(
             summary = "Return a borrowed book",
             description = "Allows a patron to return a book they have borrowed. Updates the return date and book availability."
@@ -134,13 +134,13 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('PATRON')")
     @PatchMapping("/return")
-    public GenericResponse<Void> returnBook(@RequestParam Long borrowRecordId){
+    public GenericResponse<Void> returnBook(@RequestParam Long borrowRecordId) {
         User user = authenticationService.getAuthenticatedUser();
         borrowRecordService.returnBook(borrowRecordId, user.getId());
         return new GenericResponse<>(true, "Book returned successfully", null);
     }
 
-    // GET OVERDUE RECORDS
+
     @Operation(
             summary = "Get all overdue borrow records",
             description = "Retrieves all borrow records that are overdue (not returned and past due date). Accessible only to users with the LIBRARIAN role."
@@ -155,7 +155,7 @@ public class BorrowRecordController {
 
     @PreAuthorize("hasRole('LIBRARIAN')")
     @GetMapping("/overdue")
-    public GenericResponse<List<BorrowRecordWithUserResponse>> getOverdueRecords(){
+    public GenericResponse<List<BorrowRecordWithUserResponse>> getOverdueRecords() {
         List<BorrowRecordWithUserResponse> responses = borrowRecordService.getOverdueRecords();
         return new GenericResponse<>(true, "Overdue borrow records retrieved successfully", responses);
     }

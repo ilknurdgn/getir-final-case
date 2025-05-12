@@ -28,7 +28,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationService authenticationService;
 
-    // GET USER PROFILE
+
     @Operation(
             summary = "Get authenticated user's profile",
             description = "Returns the profile information of the currently authenticated user. Accessible only by users with PATRON role."
@@ -47,7 +47,7 @@ public class UserController {
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 
-    // UPDATE USER PROFILE
+
     @Operation(
             summary = "Update authenticated user's profile",
             description = "Updates the profile of the currently authenticated user. Accessible only by users with PATRON role."
@@ -66,7 +66,7 @@ public class UserController {
     }
 
 
-    // DELETE USER PROFILE
+
     @Operation(
             summary = "Delete own user profile",
             description = "Deletes the currently authenticated user's profile. Accessible only by users with PATRON role."

@@ -30,7 +30,7 @@ public class BookController {
 
     private final BookService bookService;
 
-    // ADD BOOK
+
     @Operation(
             summary = "Add a new book to the library",
             description = "Allows librarians to add a new book to the system. ISBN must be unique. Accessible only by users with LIBRARIAN role."
@@ -50,7 +50,7 @@ public class BookController {
         return new GenericResponse<>(true, "Book added successfully", null);
     }
 
-    // GET BOOK BY ID
+
     @Operation(
             summary = "Get book details by id",
             description = "Retrieves detailed information about a book by its id. Accessible by users with LIBRARIAN or PATRON role."
@@ -70,7 +70,7 @@ public class BookController {
         return new GenericResponse<>(true, "Book details retrieved successfully", response);
     }
 
-    // GET ALL BOOKS
+
     @Operation(summary = "Get all books", description = "Returns a paginated list of all books. Accessible by librarians and patrons.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Books retrieved successfully"),
@@ -85,7 +85,7 @@ public class BookController {
         return new GenericResponse<>(true, "Books retrieved successfully", response);
     }
 
-    // SEARCH
+
     @Operation(summary = "Search books", description = "Search for books by title, author, ISBN or genre. Supports pagination.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Books filtered successfully"),
@@ -104,7 +104,7 @@ public class BookController {
         return new GenericResponse<>(true, "Books filtered successfully", response);
     }
 
-    // UPDATE BOOK
+
     @Operation(summary = "Partial update book", description = "Updates only provided fields of a book. Accessible only by users with LIBRARIAN role.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Book patched successfully"),
@@ -123,7 +123,7 @@ public class BookController {
         return new GenericResponse<>(true, "Book updated successfully", null);
     }
 
-    // DELETE BOOK
+
     @Operation(
             summary = "Delete book",
             description = "Deletes an existing book by its ID. Accessible only by users with LIBRARIAN role."

@@ -1,6 +1,8 @@
 package tr.com.getir.getirfinalcase.model.dto.response;
 
 import lombok.Builder;
+import org.springframework.data.domain.Page;
+import tr.com.getir.getirfinalcase.model.entity.Book;
 
 import java.util.List;
 
@@ -13,4 +15,15 @@ public record PagedResponse<T>(
         int totalPages,
         boolean last
 ) {
+
+    public static <T> PagedResponse<T> of(Page<T> page) {
+        return new PagedResponse<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getSize(),
+                page.getTotalElements(),
+                page.getTotalPages(),
+                page.isLast()
+        );
+    }
 }

@@ -33,7 +33,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final CustomUserDetailsService customUserDetailsService;
     private final AuthenticationManager authenticationManager;
 
-    // REGISTER
+
     @Override
     public AuthenticationResponse register(UserCreateRequest request) {
 
@@ -49,7 +49,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return new AuthenticationResponse(jwtUtil.generateToken(new CustomUserDetails(user)));
     }
 
-    // LOGIN
+
     @Override
     public AuthenticationResponse login(UserLoginRequest request) {
         try {

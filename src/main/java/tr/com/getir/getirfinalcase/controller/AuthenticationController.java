@@ -29,7 +29,7 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
-    // REGISTER
+
     @Operation(
             summary = "Register a new user",
             description = "Registers a new user with the given information and returns an authentication token"
@@ -46,7 +46,7 @@ public class AuthenticationController {
                 .body(new GenericResponse<>(true, "User registered successfully", response));
     }
 
-    // LOGIN
+
     @Operation(
             summary = "User login",
             description = "Authenticates user with email and password and returns a JWT token"

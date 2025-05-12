@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class BookSpecification {
+public class
+BookSpecification {
 
     public static Specification<Book> filter(BookSearchCriteriaRequest c) {
         return (root, query, cb) -> {
