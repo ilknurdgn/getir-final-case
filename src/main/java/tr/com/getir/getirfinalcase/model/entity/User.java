@@ -45,6 +45,19 @@ public class User extends Auditable {
     private List<BorrowRecord> borrowRecords;
 
     @Override
+    public String toString() {
+        return "User{" +
+                "phoneNumber='" + phoneNumber + '\'' +
+                ", name='" + name + '\'' +
+                ", id=" + id +
+                ", surname='" + surname + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", userRole=" + userRole +
+                '}';
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

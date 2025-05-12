@@ -13,10 +13,12 @@ import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
 import tr.com.getir.getirfinalcase.model.entity.BorrowRecord;
 import tr.com.getir.getirfinalcase.model.entity.User;
+import tr.com.getir.getirfinalcase.model.event.BookAvailabilityEvent;
 import tr.com.getir.getirfinalcase.repository.BookRepository;
 import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.BorrowRecordService;
+import tr.com.getir.getirfinalcase.service.reactive.BookAvailabilityService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -29,6 +31,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BookRepository bookRepository;
     private final BorrowRecordMapper borrowRecordMapper;
     private final UserRepository userRepository;
+    private final BookAvailabilityService bookAvailabilityService;
 
     // BORROW BOOK
     @Override
@@ -54,6 +57,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
         bookRepository.save(book);
         BorrowRecord borrowRecord = borrowRecordMapper.toBorrowRecord(user, book);
         borrowRecordRepository.save(borrowRecord);
+        bookAvailabilityService.publishAvailabilityChange(new BookAvailabilityEvent(book.getId(), false));
     }
 
     // GET BORROW RECORDS BY USER ID
@@ -103,6 +107,7 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
 
         bookRepository.save(book);
         borrowRecordRepository.save(borrowRecord);
+        bookAvailabilityService.publishAvailabilityChange(new BookAvailabilityEvent(book.getId(), true));
     }
 
     // GET OVERDUE RECORDS
