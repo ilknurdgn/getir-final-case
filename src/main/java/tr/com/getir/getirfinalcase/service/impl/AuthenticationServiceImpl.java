@@ -21,7 +21,6 @@ import tr.com.getir.getirfinalcase.security.CustomUserDetailsService;
 import tr.com.getir.getirfinalcase.security.JwtUtil;
 import tr.com.getir.getirfinalcase.service.AuthenticationService;
 
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -36,31 +35,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public AuthenticationResponse register(UserCreateRequest request) {
-
-        Optional<User> userOptional = userRepository.findByEmail(request.email());
-
-        if(userOptional.isPresent()){
-            throw new EmailAlreadyExistException("Email already exist");
-        }
-
+        checkIfEmailExists(request.email());
         User user = userMapper.mapUserCreateRequestToUser(request);
         userRepository.save(user);
-
-        return new AuthenticationResponse(jwtUtil.generateToken(new CustomUserDetails(user)));
+        String token = generateToken(user.getEmail());
+        return new AuthenticationResponse(token);
     }
 
 
     @Override
     public AuthenticationResponse login(UserLoginRequest request) {
-        try {
-            authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
-            );
-        }catch (BadCredentialsException e){
-            throw new InvalidCredentialsException("Incorrect email or password");
-        }
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(request.email());
-        return new AuthenticationResponse(jwtUtil.generateToken(userDetails));
+        authenticate(request);
+        String token = generateToken(request.email());
+        return new AuthenticationResponse(token);
     }
 
 
@@ -69,5 +56,29 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         return userDetails.getUser();
+    }
+
+
+    private void checkIfEmailExists(String email) {
+        if (userRepository.findByEmail(email).isPresent()) {
+            throw new EmailAlreadyExistException("Email already exist");
+        }
+    }
+
+
+    private String generateToken(String email) {
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        return jwtUtil.generateToken(userDetails);
+    }
+
+
+    private void authenticate(UserLoginRequest request) {
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.email(), request.password())
+            );
+        } catch (BadCredentialsException e) {
+            throw new InvalidCredentialsException("Incorrect email or password");
+        }
     }
 }

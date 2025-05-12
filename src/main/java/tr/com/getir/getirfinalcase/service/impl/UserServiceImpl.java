@@ -24,10 +24,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserResponse getUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+    public UserResponse getUserById(Long id) {
+        User user = getUser(id);
         return userMapper.mapToUserResponse(user);
     }
 
@@ -35,7 +33,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
-
         return users.stream()
                 .map(userMapper::mapToUserResponse)
                 .toList();
@@ -44,14 +41,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updateUser(Long id, UserUpdateRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        User user = getUser(id);
 
-        Optional.ofNullable(request.name()).ifPresent(user::setName);
-        Optional.ofNullable(request.surname()).ifPresent(user::setSurname);
-        Optional.ofNullable(request.email()).ifPresent(user::setEmail);
-        Optional.ofNullable(request.password()).ifPresent(password -> user.setPassword(passwordEncoder.encode(password)));
-        Optional.ofNullable(request.phoneNumber()).ifPresent(user::setPhoneNumber);
+        userMapper.updateUserFromRequest(request, user);
+        Optional.ofNullable(request.password())
+                .map(passwordEncoder::encode)
+                .ifPresent(user::setPassword);
 
         userRepository.save(user);
     }
@@ -59,9 +54,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void deleteUser(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
-
+        User user = getUser(id);
         userRepository.delete(user);
+    }
+
+
+    private User getUser(Long id){
+        return userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
     }
 }

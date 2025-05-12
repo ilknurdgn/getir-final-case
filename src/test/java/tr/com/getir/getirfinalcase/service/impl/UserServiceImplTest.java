@@ -49,7 +49,7 @@ class UserServiceImplTest {
         when(userMapper.mapToUserResponse(user)).thenReturn(expectedResponse);
 
         // When
-        UserResponse result = userService.getUser(1L);
+        UserResponse result = userService.getUserById(1L);
 
         // Then
         assertEquals(expectedResponse, result);
@@ -63,7 +63,7 @@ class UserServiceImplTest {
         when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
         // Expect an exception to be thrown
-        assertThrows(EntityNotFoundException.class, () -> userService.getUser(1L));
+        assertThrows(EntityNotFoundException.class, () -> userService.getUserById(1L));
     }
 
     // GET ALL USERS

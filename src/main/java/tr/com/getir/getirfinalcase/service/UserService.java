@@ -6,7 +6,7 @@ import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import java.util.List;
 
 public interface UserService {
-    UserResponse getUser(Long id);
+    UserResponse getUserById(Long id);
 
     List<UserResponse> getAllUsers();
 

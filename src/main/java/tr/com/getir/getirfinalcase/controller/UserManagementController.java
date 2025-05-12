@@ -40,7 +40,7 @@ public class UserManagementController {
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('LIBRARIAN')")
     public GenericResponse<UserResponse> getUserById(@PathVariable Long id){
-        UserResponse response = userService.getUser(id);
+        UserResponse response = userService.getUserById(id);
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 

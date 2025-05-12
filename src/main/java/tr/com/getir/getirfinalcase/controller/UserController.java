@@ -43,7 +43,7 @@ public class UserController {
     @PreAuthorize("hasRole('PATRON')")
     public GenericResponse<UserResponse> getUser(){
         User user =authenticationService.getAuthenticatedUser();
-        UserResponse response = userService.getUser(user.getId());
+        UserResponse response = userService.getUserById(user.getId());
         return new GenericResponse<>(true, "User details retrieved successfully", response);
     }
 

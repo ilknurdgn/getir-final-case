@@ -4,8 +4,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import tr.com.getir.getirfinalcase.model.dto.request.UserCreateRequest;
+import tr.com.getir.getirfinalcase.model.dto.request.UserUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.UserResponse;
 import tr.com.getir.getirfinalcase.model.entity.User;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -33,5 +36,12 @@ public class UserMapper{
                 .phoneNumber(user.getPhoneNumber())
                 .userRole(user.getUserRole())
                 .build();
+    }
+
+    public void updateUserFromRequest(UserUpdateRequest request, User user){
+        Optional.ofNullable(request.name()).ifPresent(user::setName);
+        Optional.ofNullable(request.surname()).ifPresent(user::setSurname);
+        Optional.ofNullable(request.email()).ifPresent(user::setEmail);
+        Optional.ofNullable(request.phoneNumber()).ifPresent(user::setPhoneNumber);
     }
 }
