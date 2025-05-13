@@ -3,10 +3,7 @@ package tr.com.getir.getirfinalcase.service.impl;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tr.com.getir.getirfinalcase.exception.BookNotAvailableException;
 import tr.com.getir.getirfinalcase.exception.EntityNotFoundException;
-import tr.com.getir.getirfinalcase.exception.UnauthorizedBorrowReturnException;
-import tr.com.getir.getirfinalcase.exception.UserHasOverdueRecordException;
 import tr.com.getir.getirfinalcase.mapper.BorrowRecordMapper;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordWithUserResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.BorrowRecordsResponse;
@@ -19,6 +16,7 @@ import tr.com.getir.getirfinalcase.repository.BorrowRecordRepository;
 import tr.com.getir.getirfinalcase.repository.UserRepository;
 import tr.com.getir.getirfinalcase.service.BorrowRecordService;
 import tr.com.getir.getirfinalcase.service.ReactiveBookAvailabilityService;
+import tr.com.getir.getirfinalcase.validator.BorrowRecordValidator;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,14 +30,15 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     private final BorrowRecordMapper borrowRecordMapper;
     private final UserRepository userRepository;
     private final ReactiveBookAvailabilityService reactiveBookAvailabilityService;
+    private final BorrowRecordValidator borrowRecordValidator;
 
 
     @Override
     @Transactional
     public void borrowBook(User user, Long bookId) {
         Book book = getBook(bookId);
-        validateBookIsAvailable(book);
-        validateUserHasNoOverdueRecords(user);
+        borrowRecordValidator.validateBookIsAvailable(book);
+        borrowRecordValidator.validateUserHasNoOverdueRecords(user);
 
         book.setAvailability(false);
         bookRepository.save(book);
@@ -75,9 +74,9 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     @Transactional
     public void returnBook(Long borrowRecordId, Long userId) {
         BorrowRecord borrowRecord = getBorrowRecord(borrowRecordId);
-        validateReturnAuthorization(borrowRecord, userId);
+        borrowRecordValidator.validateReturnAuthorization(borrowRecord, userId);
 
-        validateNotAlreadyReturned(borrowRecord);
+        borrowRecordValidator.validateNotAlreadyReturned(borrowRecord);
 
         borrowRecord.setReturnDate(LocalDate.now());
 
@@ -108,25 +107,6 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     }
 
 
-    private void validateBookIsAvailable(Book book){
-        if(!book.getAvailability()){
-            throw new BookNotAvailableException("Book is currently not available for borrowing");
-        }
-    }
-
-
-    private void validateUserHasNoOverdueRecords(User user){
-        boolean hasOverdue = borrowRecordRepository
-                .existsByUserAndDueDateBeforeAndReturnDateIsNull(
-                        user, LocalDate.now()
-                );
-
-        if(hasOverdue){
-            throw new UserHasOverdueRecordException("The user has an overdue borrowing record and cannot borrow a new book");
-        }
-    }
-
-
     private void publishAvailabilityEvent(Long bookId, boolean availability){
         reactiveBookAvailabilityService.publishAvailabilityChange(
                 new BookAvailabilityEvent(bookId, availability)
@@ -143,19 +123,5 @@ public class BorrowRecordServiceImpl implements BorrowRecordService {
     private BorrowRecord getBorrowRecord(Long id){
         return borrowRecordRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Borrow record not found"));
-    }
-
-
-    private void validateReturnAuthorization(BorrowRecord borrowRecord, Long userId){
-        if(!borrowRecord.getUser().getId().equals(userId)){
-            throw new UnauthorizedBorrowReturnException("Returning a book borrowed by another user is not permitted");
-        }
-    }
-
-
-    private void validateNotAlreadyReturned(BorrowRecord borrowRecord){
-        if (borrowRecord.getReturnDate() != null) {
-            throw new IllegalStateException("This book was already returned");
-        }
     }
 }
