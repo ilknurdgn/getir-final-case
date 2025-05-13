@@ -55,7 +55,7 @@ class AuthenticationServiceImplTest {
 
         // Mock the calls
         when(userRepository.findByEmail(request.email())).thenReturn(Optional.empty());
-        when(userMapper.mapUserCreateRequestToUser(request)).thenReturn(user);
+        when(userMapper.toUser(request)).thenReturn(user);
         when(jwtUtil.generateToken(any())).thenReturn("mocked-token");
 
         // WHEN

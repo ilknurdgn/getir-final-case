@@ -7,12 +7,13 @@ import java.time.LocalDate;
 @Builder
 public record BorrowRecordWithUserResponse(
         Long id,
+        String userFullName,
+        String userEmail,
+        String bookTitle,
+        String isbn,
         LocalDate borrowDate,
         LocalDate dueDate,
-        LocalDate returnDate,
-        BookInfo book,
-        UserInfo user
+        LocalDate returnDate
 ) {
-    public record BookInfo(Long id, String title, String author, String isbn) {}
-    public record UserInfo(Long id, String firstName, String lastName, String email) {}
+
 }

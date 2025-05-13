@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserById(Long id) {
         User user = getUser(id);
-        return userMapper.mapToUserResponse(user);
+        return userMapper.toUserResponse(user);
     }
 
 
@@ -34,7 +34,7 @@ public class UserServiceImpl implements UserService {
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findAll();
         return users.stream()
-                .map(userMapper::mapToUserResponse)
+                .map(userMapper::toUserResponse)
                 .toList();
     }
 

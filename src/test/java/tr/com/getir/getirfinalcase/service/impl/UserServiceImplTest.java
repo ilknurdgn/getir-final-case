@@ -46,7 +46,7 @@ class UserServiceImplTest {
 
         // Mock the calls
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
-        when(userMapper.mapToUserResponse(user)).thenReturn(expectedResponse);
+        when(userMapper.toUserResponse(user)).thenReturn(expectedResponse);
 
         // When
         UserResponse result = userService.getUserById(1L);
@@ -75,7 +75,7 @@ class UserServiceImplTest {
 
         // Mock the calls
         when(userRepository.findAll()).thenReturn(users);
-        when(userMapper.mapToUserResponse(users.getFirst())).thenReturn(expectedResponses.getFirst());
+        when(userMapper.toUserResponse(users.getFirst())).thenReturn(expectedResponses.getFirst());
 
         // When
         List<UserResponse> result = userService.getAllUsers();

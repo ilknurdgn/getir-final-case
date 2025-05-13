@@ -54,7 +54,7 @@ public class UserManagementController {
             @ApiResponse(responseCode = "403", description = "Access denied. You are not authorized for this action.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = GeneralErrorMessage.class)))
     })
 
-    @GetMapping("/")
+    @GetMapping
     @PreAuthorize("hasRole('LIBRARIAN')")
     public GenericResponse<List<UserResponse>> getAllUsers(){
         List<UserResponse> responses = userService.getAllUsers();

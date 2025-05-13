@@ -16,7 +16,7 @@ public class UserMapper{
 
     private final PasswordEncoder passwordEncoder;
 
-    public User mapUserCreateRequestToUser(UserCreateRequest request) {
+    public User toUser(UserCreateRequest request) {
         return User.builder()
                 .name(request.name())
                 .surname(request.surname())
@@ -27,7 +27,7 @@ public class UserMapper{
                 .build();
     }
 
-    public UserResponse mapToUserResponse(User user){
+    public UserResponse toUserResponse(User user){
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())

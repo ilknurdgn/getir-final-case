@@ -36,7 +36,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationResponse register(UserCreateRequest request) {
         checkIfEmailExists(request.email());
-        User user = userMapper.mapUserCreateRequestToUser(request);
+        User user = userMapper.toUser(request);
         userRepository.save(user);
         String token = generateToken(user.getEmail());
         return new AuthenticationResponse(token);

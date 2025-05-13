@@ -40,7 +40,7 @@ public class BorrowRecordController {
     })
 
     @PreAuthorize("hasRole('PATRON')")
-    @PostMapping("/")
+    @PostMapping
     public GenericResponse<Void> borrowBook(@RequestParam Long bookId) {
         User user = authenticationService.getAuthenticatedUser();
         borrowRecordService.borrowBook(user, bookId);
@@ -98,7 +98,7 @@ public class BorrowRecordController {
     })
 
     @PreAuthorize("hasRole('LIBRARIAN')")
-    @GetMapping("/")
+    @GetMapping
     public GenericResponse<List<BorrowRecordWithUserResponse>> getAllBorrowRecords() {
         List<BorrowRecordWithUserResponse> responses = borrowRecordService.getAllBorrowRecords();
         return new GenericResponse<>(true, "Borrow records successfully retrieved.", responses);

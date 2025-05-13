@@ -41,7 +41,7 @@ class BookServiceImplTest {
         Book book = createMockBook();
 
         when(bookRepository.existsByIsbn(request.isbn())).thenReturn(false);
-        when(bookMapper.mapBookCreateRequestToBook(request)).thenReturn(book);
+        when(bookMapper.toBook(request)).thenReturn(book);
 
         // WHEN
         bookService.addBook(request);
@@ -69,7 +69,7 @@ class BookServiceImplTest {
         BookResponse response = createMockBookResponse();
 
         when(bookRepository.findById(1L)).thenReturn(Optional.of(book));
-        when(bookMapper.mapBookToBookResponse(book)).thenReturn(response);
+        when(bookMapper.toBookResponse(book)).thenReturn(response);
 
         // WHEN
         BookResponse result = bookService.getBookById(1L);

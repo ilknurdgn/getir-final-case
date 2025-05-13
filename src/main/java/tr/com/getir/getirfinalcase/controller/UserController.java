@@ -79,7 +79,7 @@ public class UserController {
 
     @DeleteMapping
     @PreAuthorize("hasRole('PATRON')")
-    public GenericResponse<Void> deleteUSer(){
+    public GenericResponse<Void> deleteUser(){
         User user = authenticationService.getAuthenticatedUser();
         userService.deleteUser(user.getId());
         return new GenericResponse<>(true, "User deleted successfully", null);

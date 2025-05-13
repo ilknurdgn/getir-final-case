@@ -22,38 +22,31 @@ public class BorrowRecordMapper {
     }
 
     public BorrowRecordsResponse toBorrowRecordResponse(BorrowRecord borrowRecord){
+        Book book = borrowRecord.getBook();
+
         return BorrowRecordsResponse.builder()
                 .id(borrowRecord.getId())
+                .title(book.getTitle())
+                .isbn(book.getIsbn())
                 .borrowDate(borrowRecord.getBorrowDate())
                 .dueDate(borrowRecord.getDueDate())
                 .returnDate(borrowRecord.getReturnDate())
-                .book(new BorrowRecordsResponse.BookInfo(
-                        borrowRecord.getBook().getId(),
-                        borrowRecord.getBook().getTitle(),
-                        borrowRecord.getBook().getAuthor(),
-                        borrowRecord.getBook().getIsbn()
-                ))
                 .build();
     }
 
     public BorrowRecordWithUserResponse toWithUserResponse(BorrowRecord borrowRecord){
+        User user = borrowRecord.getUser();
+        Book book = borrowRecord.getBook();
+
         return BorrowRecordWithUserResponse.builder()
                 .id(borrowRecord.getId())
+                .userFullName(user.getName() + " " + user.getSurname())
+                .userEmail(user.getEmail())
+                .bookTitle(book.getTitle())
+                .isbn(book.getIsbn())
                 .borrowDate(borrowRecord.getBorrowDate())
                 .dueDate(borrowRecord.getDueDate())
                 .returnDate(borrowRecord.getReturnDate())
-                .book(new BorrowRecordWithUserResponse.BookInfo(
-                        borrowRecord.getBook().getId(),
-                        borrowRecord.getBook().getTitle(),
-                        borrowRecord.getBook().getAuthor(),
-                        borrowRecord.getBook().getIsbn()
-                ))
-                .user(new BorrowRecordWithUserResponse.UserInfo(
-                        borrowRecord.getUser().getId(),
-                        borrowRecord.getUser().getName(),
-                        borrowRecord.getUser().getSurname(),
-                        borrowRecord.getUser().getEmail()
-                ))
                 .build();
     }
 }

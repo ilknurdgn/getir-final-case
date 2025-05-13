@@ -7,10 +7,11 @@ import java.time.LocalDate;
 @Builder
 public record BorrowRecordsResponse(
         Long id,
+        String title,
+        String isbn,
         LocalDate borrowDate,
         LocalDate dueDate,
-        LocalDate returnDate,
-        BookInfo book
+        LocalDate returnDate
 ) {
-    public record BookInfo(Long id, String title, String author, String isbn) {}
+
 }

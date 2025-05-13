@@ -12,7 +12,7 @@ import tr.com.getir.getirfinalcase.model.dto.request.BookUpdateRequest;
 import tr.com.getir.getirfinalcase.model.dto.response.BookResponse;
 import tr.com.getir.getirfinalcase.model.dto.response.PagedResponse;
 import tr.com.getir.getirfinalcase.model.entity.Book;
-import tr.com.getir.getirfinalcase.model.specification.BookSpecification;
+import tr.com.getir.getirfinalcase.repository.specification.BookSpecification;
 import tr.com.getir.getirfinalcase.repository.BookRepository;
 import tr.com.getir.getirfinalcase.service.BookService;
 import org.springframework.data.domain.Pageable;
@@ -32,7 +32,7 @@ public class BookServiceImpl implements BookService {
     @Override
     public void addBook(BookCreateRequest request) {
         bookValidator.validateIsbnUnique(request.isbn());
-        Book book = bookMapper.mapBookCreateRequestToBook(request);
+        Book book = bookMapper.toBook(request);
         bookRepository.save(book);
     }
 
@@ -40,14 +40,14 @@ public class BookServiceImpl implements BookService {
     @Override
     public BookResponse getBookById(Long id) {
         Book book = getBook(id);
-        return bookMapper.mapBookToBookResponse(book);
+        return bookMapper.toBookResponse(book);
     }
 
 
     @Override
     public PagedResponse<BookResponse> getAllBooks(Pageable pageable) {
         Page<BookResponse> page = bookRepository.findAll(pageable)
-                .map(bookMapper::mapBookToBookResponse);
+                .map(bookMapper::toBookResponse);
 
         return PagedResponse.of(page);
     }
@@ -56,9 +56,11 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public PagedResponse<BookResponse> searchBooks(BookSearchCriteriaRequest criteria, Pageable pageable) {
+        // Applying Specification Design Pattern to dynamically filter books
         Specification<Book> specification = BookSpecification.filter(criteria);
+
         Page<Book> booksPage = bookRepository.findAll(specification, pageable);
-        Page<BookResponse> mappedPage = booksPage.map(bookMapper::mapBookToBookResponse);
+        Page<BookResponse> mappedPage = booksPage.map(bookMapper::toBookResponse);
 
         return PagedResponse.of(mappedPage);
     }

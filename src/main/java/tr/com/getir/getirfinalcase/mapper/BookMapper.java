@@ -11,7 +11,7 @@ import java.util.Optional;
 @Component
 public class BookMapper {
 
-    public Book mapBookCreateRequestToBook(BookCreateRequest request){
+    public Book toBook(BookCreateRequest request){
         return Book.builder()
                 .title(request.title())
                 .author(request.author())
@@ -24,7 +24,7 @@ public class BookMapper {
                 .build();
     }
 
-    public BookResponse mapBookToBookResponse(Book book) {
+    public BookResponse toBookResponse(Book book) {
 
         return BookResponse.builder()
                 .id(book.getId())

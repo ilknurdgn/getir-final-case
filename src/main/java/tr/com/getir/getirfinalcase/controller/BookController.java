@@ -44,7 +44,7 @@ public class BookController {
     })
 
     @PreAuthorize("hasRole('LIBRARIAN')")
-    @PostMapping("/")
+    @PostMapping
     public GenericResponse<Void> addBook(@RequestBody @Valid BookCreateRequest request) {
         bookService.addBook(request);
         return new GenericResponse<>(true, "Book added successfully", null);
@@ -79,7 +79,7 @@ public class BookController {
     })
 
     @PreAuthorize("hasAnyRole('LIBRARIAN', 'PATRON')")
-    @GetMapping("/")
+    @GetMapping
     public GenericResponse<PagedResponse<BookResponse>> getAllBooks(@ParameterObject @PageableDefault(page = 0, size = 5) Pageable pageable){
         PagedResponse<BookResponse> response = bookService.getAllBooks(pageable);
         return new GenericResponse<>(true, "Books retrieved successfully", response);
