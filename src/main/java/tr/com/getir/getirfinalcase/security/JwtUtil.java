@@ -18,8 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    @Value("${JWT_SECRET_KEY}")
-    private String secretKey;
+    private String secretKey = "818c455dcecfc6f4e99b39894f254a6ad339674c2f98deb160443acbf8bbc870";
     private final long EXPIRATION_TIME = 1000 * 60 * 60;
 
     private Key getSignInKey() {
